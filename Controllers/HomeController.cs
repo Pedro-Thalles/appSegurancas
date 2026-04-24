@@ -14,6 +14,7 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
+        //com esse método, o sistema vai procurar uma view chamada Index dentro da pasta Views/Home
         return View();
     }
 

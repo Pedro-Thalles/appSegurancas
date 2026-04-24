@@ -1,0 +1,33 @@
+@model IEnumerable<appSegurancas.Models.Contracheque>
+
+    @{ ViewData["Title"] = "Meus Contracheques"; }
+
+    <h2>Meus Pagamentos</h2>
+
+    <table class="table table-hover mt-4">
+        <thead class="table-dark">
+            <tr>
+                <th>Mês/Ano</th>
+                <th>Salário Bruto</th>
+                <th>Descontos</th>
+                <th>Salário Líquido</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.MesUpload</td>
+                <td>@item.AnoUpload</td>
+                <td>
+                    <a asp-action="DownloadContracheque"
+                       asp-route-id="@item.id"
+                       class="btn btn-sm btn-danger">
+                        <i class="bi bi-file-earmark-pdf"></i> PDF
+                    </a>
+                </td>
+            </tr>
+        }   
+        </tbody>
+    </table>

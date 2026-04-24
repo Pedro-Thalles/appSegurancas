@@ -28,8 +28,12 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
+
+//isso é a rota inicial
 app.MapControllerRoute(
     name: "default",
+    //ele procura um CONTROLLER. Se não encontrar, ele procura o HomeController.
+    //Depois ele procura a ACTION. Se não encontrar, ele procura a Index.
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
