@@ -7,10 +7,8 @@
     <table class="table table-hover mt-4">
         <thead class="table-dark">
             <tr>
-                <th>Mês/Ano</th>
-                <th>Salário Bruto</th>
-                <th>Descontos</th>
-                <th>Salário Líquido</th>
+                <th>Mês</th>
+                <th>Ano</th>
                 <th>Ações</th>
             </tr>
         </thead>
@@ -18,8 +16,8 @@
             @foreach (var item in Model)
         {
             <tr>
-                <td>@item.MesUpload</td>
-                <td>@item.AnoUpload</td>
+                <td>@item.mesUpload</td>
+                <td>@item.anoUpload</td>
                 <td>
                     <a asp-action="DownloadContracheque"
                        asp-route-id="@item.id"

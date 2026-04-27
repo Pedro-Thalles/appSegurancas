@@ -72,7 +72,7 @@ public class SegurancaController : Controller
                         ModelState.AddModelError(string.Empty, "Usuário não aprovado. Contate o administrador.");
                         return View(model);
                     }
-
+                    //esse é o objetivo, se chegar aqui, mata o login 
                     return RedirectToAction("Index", "Home");
                 }
 
@@ -132,7 +132,7 @@ public class SegurancaController : Controller
         return View(usuario.Contracheques);
     }
 
-    public async Task<IActionResult> GerarDadosTeste(int id)
+    /*public async Task<IActionResult> GerarDadosTeste(int id)
     {
         var novoContracheque = new Contracheque
         {
@@ -146,7 +146,108 @@ public class SegurancaController : Controller
         await _context.SaveChangesAsync();
 
         return Content($"Gerado para o Segurança {id}!");
+    }*/
+
+    //GET: /Seguranca/VisualizarSegurancas
+
+    public IActionResult VisualizarSegurancas()
+    {
+        var segurancas = _context.Segurancas.Where(s => s.isApproved == true).ToList();
+        return View(segurancas);
     }
+
+
+    // GET: /Seguranca/UploadContracheque/5
+    public IActionResult UploadContracheque(int id)
+    {
+        var seguranca = _context.Segurancas.Find(id);
+        if (seguranca == null) return NotFound();
+
+        var model = new ContrachequeViewModel
+        {
+            segurancaId = id,
+            nomeSeguranca = seguranca.nome
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UploadContracheque(ContrachequeViewModel model)
+    {
+        ModelState.Remove("nomeSeguranca"); // Remove a validação do nome, pois ele não é enviado no formulário
+        if (ModelState.IsValid)
+        {
+            if (model.arquivoPdf != null && model.arquivoPdf.Length > 0)
+            {
+                // Definir o nome do arquivo
+                string nomeArquivo = $"Contracheque_{model.segurancaId}_{model.mesUpload}_{model.anoUpload}.pdf";
+
+                // Caminho onde será salvo 
+                string caminhoPasta = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "contracheques");
+                string caminhoCompleto = Path.Combine(caminhoPasta, nomeArquivo);
+
+                // Salvar o arquivo físico no HD
+                using (var stream = new FileStream(caminhoCompleto, FileMode.Create))
+                {
+                    await model.arquivoPdf.CopyToAsync(stream);
+                }
+
+                // Salvar as informações no Banco de Dados
+                var novoContracheque = new Contracheque
+                {
+                    mesUpload = model.mesUpload,
+                    anoUpload = model.anoUpload,
+                    segurancaId = model.segurancaId,
+                    
+                    filePath = $"/uploads/contracheques/{nomeArquivo}"
+                };
+
+                _context.Contracheques.Add(novoContracheque);
+                await _context.SaveChangesAsync();
+                Console.WriteLine("TESTE");
+                return RedirectToAction("VisualizarSegurancas");
+            }
+        }
+
+        Console.WriteLine("ModelState inválido ou arquivo não selecionado.");
+
+        return View(model);
+    }
+
+
+    // GET: /Seguranca/DownloadContracheque/5
+    public IActionResult DownloadContracheque(int id)
+    {
+        // 1. Busca o registro do contracheque no banco
+        var contracheque = _context.Contracheques.FirstOrDefault(c => c.id == id);
+
+        if (contracheque == null || string.IsNullOrEmpty(contracheque.filePath))
+        {
+            return NotFound("Arquivo não encontrado no banco de dados.");
+        }
+
+        // 2. Monta o caminho físico completo no servidor
+        // O Path.Combine garante que funcione em qualquer sistema (Windows/Linux)
+        var caminhoArquivo = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", contracheque.filePath.TrimStart('/'));
+
+        // 3. Verifica se o arquivo físico REALMENTE existe na pasta
+        if (!System.IO.File.Exists(caminhoArquivo))
+        {
+            return NotFound("O arquivo físico não foi encontrado na pasta de uploads.");
+        }
+
+        // 4. Lê os bytes do arquivo
+        var bytes = System.IO.File.ReadAllBytes(caminhoArquivo);
+
+        // 5. Define o nome que o arquivo terá quando o usuário baixar
+        string nomeParaDownload = $"Contracheque_{contracheque.mesUpload}_{contracheque.anoUpload}.pdf";
+
+        // 6. Retorna o arquivo para o navegador
+        return File(bytes, "application/pdf", nomeParaDownload);
+    }
+
+
 
 
 }

@@ -11,8 +11,8 @@ public class  Contracheque
 	[Required]
     public int segurancaId { get; set; }
 
-    public int MesUpload { get; set; }
-    public int AnoUpload { get; set; }
+    public int mesUpload { get; set; }
+    public int anoUpload { get; set; }
 
     [Required]
     public string filePath { get; set; } = string.Empty;// string.Empty é para evitar campo nulo

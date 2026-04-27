@@ -1,0 +1,38 @@
+@model appSegurancas.Models.ContrachequeViewModel
+
+@{ ViewData["Title"] = "Upload de Contracheque"; }
+
+<h2>Cadastrar Contracheque para: @Model.nomeSeguranca</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="UploadContracheque" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            @* Campo oculto para manter o ID do segurança *@
+            <input type="hidden" asp-for="segurancaId" />
+
+            <div class="form-group mb-3">
+                <label asp-for="mesUpload" class="control-label">Mês</label>
+                <select asp-for="mesUpload" class="form-control">
+                    @for (int i = 1; i <= 12; i++) {
+                    <option value="@i">@System.Globalization.DateTimeFormatInfo.CurrentInfo.GetMonthName(i)</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="anoUpload" class="control-label">Ano</label>
+                <input asp-for="anoUpload" class="form-control" type="number" value="@DateTime.Now.Year" />
+            </div>
+
+            <div class="form-group mb-4">
+                <label asp-for="arquivoPdf" class="control-label">Arquivo PDF</label>
+                <input asp-for="arquivoPdf" type="file" class="form-control" accept=".pdf" />
+            </div>
+
+            <button type="submit" class="btn btn-success">Salvar Contracheque</button>
+            <a asp-action="VisualizarSegurancas" class="btn btn-secondary">Voltar</a>
+        </form>
+    </div>
+</div>

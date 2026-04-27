@@ -1,0 +1,34 @@
+@model IEnumerable<appSegurancas.Models.Seguranca>
+
+    @{ ViewData["Title"] = "Painel de Aprovados"; }
+
+    <h2>Seguranças Aprovados</h2>
+
+    <table class="table table-striped mt-4">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>CPF</th>
+                <th>Matrícula</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.nome @item.sobreNome</td>
+                <td>@item.cpf</td>
+                <td>@item.matricula</td>
+                
+
+                <td> 
+                    <!--asp route id serve pra colocar o id desse seguranca como argumento do método UploadContracheque-->
+                    <a asp-action="UploadContracheque" asp-route-id="@item.id" class="btn btn-sm btn-info">
+                        Cadastrar Contracheque
+                    </a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
