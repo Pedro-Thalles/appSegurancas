@@ -5,7 +5,7 @@ namespace appSegurancas.Models;
 public class ContrachequeViewModel
 {
     public int segurancaId { get; set; }
-    public string nomeSeguranca { get; set; } // Só para exibir na tela
+    public string nomeSeguranca { get; set; } // Só para exibir na tela, pois já passo o id dele ao clicar em cadastrar contracheque
 
     [Required(ErrorMessage = "Informe o mês")]
     [Range(1, 12)]

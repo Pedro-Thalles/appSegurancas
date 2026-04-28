@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using appSegurancas.Data;
+using Microsoft.AspNetCore.Identity;
+using appSegurancas.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +13,14 @@ builder.Services.AddDbContext<segDbContext>(options =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddScoped<IPasswordHasher<Seguranca>, PasswordHasher<Seguranca>>();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Seguranca/Login"; // Rota para a página de login
+        options.AccessDeniedPath = "/Seguranca/AcessoNegado"; // Rota para acesso negado
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(60); // Tempo de expiração do cookie
+    });
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -22,8 +32,9 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();

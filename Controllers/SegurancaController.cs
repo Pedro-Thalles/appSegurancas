@@ -2,17 +2,24 @@ using Microsoft.AspNetCore.Mvc;
 using appSegurancas.Data;
 using appSegurancas.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 
 namespace appSegurancas.Controllers;
 
 public class SegurancaController : Controller
 {
     private readonly segDbContext _context;
+    private readonly IPasswordHasher<Seguranca> _passwordHasher;
 
-   
-    public SegurancaController(segDbContext context)
+
+    public SegurancaController(segDbContext context, IPasswordHasher<Seguranca> passwordHasher)
     {
         _context = context;
+        _passwordHasher = passwordHasher;
     }
 
     public IActionResult Index()
@@ -39,12 +46,12 @@ public class SegurancaController : Controller
         if (ModelState.IsValid)
         {
             
-            seguranca.passwordHash = "HASH_" + senhaPura;
+            seguranca.passwordHash = _passwordHasher.HashPassword(seguranca, senhaPura);
 
             _context.Segurancas.Add(seguranca);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Index", "Home"); // Manda pra home após salvar
+            return RedirectToAction("Login"); // Manda pra home após salvar
         }
         return View(seguranca);
     }
@@ -55,7 +62,7 @@ public class SegurancaController : Controller
     }
 
     [HttpPost]
-    public IActionResult Login(LoginViewModel model)
+    public async Task<IActionResult> Login(LoginViewModel model)
     {
         if (ModelState.IsValid)
         {
@@ -63,19 +70,47 @@ public class SegurancaController : Controller
 
             if (usuario != null)
             {
-                string hashDigitado = "HASH_" + model.senha;
-
-                if (usuario.passwordHash == hashDigitado)
+                try
                 {
-                    if (!usuario.isApproved)
-                    {
-                        ModelState.AddModelError(string.Empty, "Usuário não aprovado. Contate o administrador.");
-                        return View(model);
-                    }
-                    //esse é o objetivo, se chegar aqui, mata o login 
-                    return RedirectToAction("Index", "Home");
-                }
+                    var resultado = _passwordHasher.VerifyHashedPassword(usuario, usuario.passwordHash, model.senha);
 
+                    if (resultado == PasswordVerificationResult.Success)
+                    {
+                        if (!usuario.isApproved)
+                        {
+                            ModelState.AddModelError(string.Empty, "Usuário não aprovado. Contate o administrador.");
+                            return View(model);
+                        }
+
+                        var claims = new List<Claim>
+                        {
+                            new Claim(ClaimTypes.Name, usuario.nome),
+                            new Claim(ClaimTypes.NameIdentifier, usuario.id.ToString()),
+                            new Claim(ClaimTypes.Role, "Seguranca")
+                        };
+
+                        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                        var authProperties = new AuthenticationProperties { IsPersistent = true };
+
+                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+
+
+                        //esse é o objetivo, se chegar aqui, mata o login
+                        //return RedirectToAction("MeusContracheques", new { id = usuario.id });
+                        
+                        return RedirectToAction("Index", "Home");
+
+                    }
+                    ViewBag.Erro = "Senha incorreta.";
+                    return View();
+
+                }
+                catch (Exception)
+                {
+                    ModelState.AddModelError(string.Empty, "Você precisa mudar sua senha");
+                    return View(model);
+                }
+                
             }
 
             ModelState.AddModelError(string.Empty, "CPF ou senha inválidos.");
@@ -120,12 +155,23 @@ public class SegurancaController : Controller
 
 
     // GET: /Seguranca/MeusContracheques/5
-    public IActionResult MeusContracheques(int id)
+    [Authorize]
+    public IActionResult MeusContracheques()
     {
-      
+        Console.WriteLine($"Usuario logado: {User.Identity.IsAuthenticated}");
+
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userId == null)
+        {
+            return RedirectToAction("Login");
+        }
+
+        int idLogado = int.Parse(userId.Value);
+
         var usuario = _context.Segurancas
             .Include(s => s.Contracheques) 
-            .FirstOrDefault(s => s.id == id);
+            .FirstOrDefault(s => s.id == idLogado);
 
         if (usuario == null) return NotFound();
 
@@ -245,6 +291,13 @@ public class SegurancaController : Controller
 
         // 6. Retorna o arquivo para o navegador
         return File(bytes, "application/pdf", nomeParaDownload);
+    }
+
+
+    public async Task<IActionResult> Logout()
+    {
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        return RedirectToAction("Login");
     }
 
 
