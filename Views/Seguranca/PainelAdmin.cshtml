@@ -2,30 +2,11 @@
 
     @{ ViewData["Title"] = "Painel de Aprovação"; }
 
-    <h2>Seguranças Aguardando Aprovação</h2>
+    <div class="text-center">
+        <h1 class="display-4" style="margin-top:150px">Painel do Administrador</h1>
+    </div>
+    <div class="text-center">
+        <button style="margin-top:100px" class="btn btn-success"><a class="nav-link" asp-area="" asp-controller="Seguranca" asp-action="AprovarSeguranca">Cadastro</a></button>
+        <button style="margin-top:100px" class="btn btn-success"><a class="nav-link" asp-area="" asp-controller="Seguranca" asp-action="VisualizarSegurancas">Contracheques</a></button>
+    </div>
 
-    <table class="table table-striped mt-4">
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>CPF</th>
-                <th>Matrícula</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.nome @item.sobreNome</td>
-                <td>@item.cpf</td>
-                <td>@item.matricula</td>
-                <td>
-                    <form asp-action="Aprovar" asp-route-id="@item.id" method="post">
-                        <button type="submit" class="btn btn-sm btn-success">Aprovar</button>
-                    </form>
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>

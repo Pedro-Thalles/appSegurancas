@@ -121,11 +121,18 @@ public class SegurancaController : Controller
 
     }
 
+    [Authorize]
+    public IActionResult PainelAdmin()
+    {
+        return View();
+    }
 
-    
+
+
 
     // GET: /Seguranca/PainelAdmin
-    public IActionResult PainelAdmin()
+    [Authorize]
+    public IActionResult AprovarSeguranca()
     {
        
         var pendentes = _context.Segurancas
@@ -195,14 +202,14 @@ public class SegurancaController : Controller
     }*/
 
     //GET: /Seguranca/VisualizarSegurancas
-
+    [Authorize]
     public IActionResult VisualizarSegurancas()
     {
         var segurancas = _context.Segurancas.Where(s => s.isApproved == true).ToList();
         return View(segurancas);
     }
 
-
+    [Authorize]
     // GET: /Seguranca/UploadContracheque/5
     public IActionResult UploadContracheque(int id)
     {
