@@ -31,6 +31,31 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<segDbContext>();
+    var hasher = services.GetRequiredService<IPasswordHasher<Seguranca>>();
+
+    if (!context.Segurancas.Any(s => s.IsAdmin))
+    {
+        var admin = new Seguranca
+        {
+            nome = "Administrador",
+            sobreNome = "Sistema",
+            cpf = "12345678912",
+            matricula = "ADMIN001",
+            isApproved = true,
+            IsAdmin = true,
+        };
+
+        admin.passwordHash = hasher.HashPassword(admin, "senhaadmin");
+
+        context.Segurancas.Add(admin);
+        context.SaveChanges();
+    }
+}
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
@@ -47,6 +72,8 @@ app.MapControllerRoute(
     //Depois ele procura a ACTION. Se não encontrar, ele procura a Index.
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
+
+
 
 
 app.Run();

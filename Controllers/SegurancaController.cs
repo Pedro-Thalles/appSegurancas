@@ -66,6 +66,14 @@ public class SegurancaController : Controller
     {
         if (ModelState.IsValid)
         {
+
+            if(model.cpf == "12345678912")
+            {
+                ModelState.AddModelError(string.Empty, "Impossível logar como administrador. Acesse a página Admin.");
+                return View(model);
+            }
+
+
             var usuario = _context.Segurancas.FirstOrDefault(s => s.cpf == model.cpf);
 
             if (usuario != null)
@@ -124,6 +132,12 @@ public class SegurancaController : Controller
     [Authorize]
     public IActionResult PainelAdmin()
     {
+
+        if (!User.HasClaim("Perfil", "Admin"))
+        {
+            return Forbid();
+        }
+
         return View();
     }
 
@@ -134,7 +148,11 @@ public class SegurancaController : Controller
     [Authorize]
     public IActionResult AprovarSeguranca()
     {
-       
+        if (!User.HasClaim("Perfil", "Admin"))
+        {
+            return Forbid();
+        }
+
         var pendentes = _context.Segurancas
             .Where(s => s.isApproved == false)
             .ToList();
@@ -205,14 +223,23 @@ public class SegurancaController : Controller
     [Authorize]
     public IActionResult VisualizarSegurancas()
     {
+        if (!User.HasClaim("Perfil", "Admin"))
+        {
+            return Forbid();
+        }
         var segurancas = _context.Segurancas.Where(s => s.isApproved == true).ToList();
         return View(segurancas);
     }
 
-    [Authorize]
+
     // GET: /Seguranca/UploadContracheque/5
+    [Authorize]
     public IActionResult UploadContracheque(int id)
     {
+        if (!User.HasClaim("Perfil", "Admin"))
+        {
+            return Forbid();
+        }
         var seguranca = _context.Segurancas.Find(id);
         if (seguranca == null) return NotFound();
 
@@ -304,10 +331,53 @@ public class SegurancaController : Controller
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        return RedirectToAction("Login");
+        return RedirectToAction("Index", "Home");
     }
 
 
+    // GET: /Seguranca/Admin
+    public IActionResult Admin()
+    {
+        // Se já estiver logado como admin, vai direto pro painel
+        if (User.Identity.IsAuthenticated && User.HasClaim("Perfil", "Admin"))
+        {
+            return RedirectToAction("PainelAdmin");
+        }
+        Console.WriteLine("ENTREI NO ADMIN");
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Admin(string login, string senha)
+    {
+        // Busca o admin único no banco
+        var admin = _context.Segurancas.FirstOrDefault(s => s.IsAdmin == true && s.cpf == login);
+
+        if (admin != null)
+        {
+           
+            var resultado = _passwordHasher.VerifyHashedPassword(admin, admin.passwordHash, senha);
+
+            if (resultado == PasswordVerificationResult.Success)
+            {
+                var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, "Administrador"),
+                new Claim(ClaimTypes.NameIdentifier, admin.id.ToString()),
+                new Claim("Perfil", "Admin") // Claim crucial para diferenciar
+            };
+
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+
+                return RedirectToAction("PainelAdmin");
+            }
+        }
+
+        ViewBag.Erro = "Acesso administrativo negado.";
+        ModelState.AddModelError(string.Empty, "Acesso administrativo negado");
+        return View();
+    }
 
 
 }

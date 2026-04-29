@@ -30,6 +30,8 @@ public class Seguranca
 
     public bool isApproved { get; set; } = false;
 
+    public bool IsAdmin { get; set; } = false;
+
     public DateTime createdAt { get; set; } = DateTime.Now;
     public DateTime updatedAt { get; set; } = DateTime.Now;
 
