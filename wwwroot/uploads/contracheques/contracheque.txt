@@ -1,0 +1,1 @@
+Essa pasta é destinada ao armazenamento dos contracheques dos funcionários em pdf.
