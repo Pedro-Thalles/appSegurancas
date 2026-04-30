@@ -61,7 +61,7 @@ dotnet watch
 ### 5. Acesso ao sistema
 
 O Administrador é criado automaticamente na primeira inicialização com o CPF 12345678912 e senha senhaadmin.
-Mude isso na no program.cs
+Mude isso no program.cs
 
 URL de Login do Admin: https://localhost:porta/Seguranca/Admin
 
