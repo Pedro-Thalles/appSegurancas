@@ -63,6 +63,6 @@ dotnet watch
 O Administrador é criado automaticamente na primeira inicialização com o CPF 12345678912 e senha senhaadmin.
 Mude isso na no program.cs
 
-URL de Login do Admin: https://localhost:<porta>/Seguranca/Admin
+URL de Login do Admin: https://localhost:porta/Seguranca/Admin
 
-URL de Login dos Seguranças: https://localhost:<porta>/Seguranca/Login
+URL de Login dos Seguranças: https://localhost:porta/Seguranca/Login
