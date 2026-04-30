@@ -1,6 +1,6 @@
 ## appSegurancas
 
-Sistema web desenvolvido para o gerenciamento de agentes de segurança, controle de acesso a funcionalidades e fluxo de aprovação de cadastros.
+Sistema web de aprendizado simples desenvolvido para o gerenciamento de agentes de segurança, controle de acesso a funcionalidades e fluxo de aprovação de cadastros.
 
 ## Funcionalidades Principais
 
