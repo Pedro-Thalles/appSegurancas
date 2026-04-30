@@ -13,27 +13,35 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
+
+                @if (User.Identity.IsAuthenticated)
+                {
+
+                if(User.IsInRole("Seguranca")) {
+
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">appSegurancas</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+                }
+
+                if(User.HasClaim("Perfil", "Admin")) {
+
+                <a class="navbar-brand" asp-area="" asp-controller="Seguranca" asp-action="PainelAdmin">appSegurancas</a>
+
+                }
+
+
+
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                     
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Seguranca" asp-action="MeusContracheques">Área de Contracheques</a>
-                        </li>
+
                         <li class="nav-item">
                             <strong><a class="nav-link text-danger" asp-area="" asp-controller="Seguranca" asp-action="Logout">Sair</a></strong>
                         </li>
-                        }
+
 
 
                     </ul>
                 </div>
+                }
             </div>
         </nav>
     </header>

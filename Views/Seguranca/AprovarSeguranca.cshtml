@@ -21,8 +21,9 @@
                 <td>@item.cpf</td>
                 <td>@item.matricula</td>
                 <td>
-                    <form asp-action="Aprovar" asp-route-id="@item.id" method="post">
-                        <button type="submit" class="btn btn-sm btn-success">Aprovar</button>
+                    <form method="post">
+                        <button type="submit" class="btn btn-sm btn-success" asp-action="Aprovar" asp-route-id="@item.id">Aprovar</button>
+                        <button type="submit" class="btn btn-sm btn-danger" asp-action="Rejeitar" asp-route-id="@item.id">Rejeitar</button>
                     </form>
                 </td>
             </tr>

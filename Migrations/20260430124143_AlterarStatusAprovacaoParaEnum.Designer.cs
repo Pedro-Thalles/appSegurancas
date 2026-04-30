@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using appSegurancas.Data;
 
@@ -11,9 +12,11 @@ using appSegurancas.Data;
 namespace appSegurancas.Migrations
 {
     [DbContext(typeof(segDbContext))]
-    partial class segDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260430124143_AlterarStatusAprovacaoParaEnum")]
+    partial class AlterarStatusAprovacaoParaEnum
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

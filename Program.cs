@@ -45,7 +45,7 @@ using (var scope = app.Services.CreateScope())
             sobreNome = "Sistema",
             cpf = "12345678912",
             matricula = "ADMIN001",
-            isApproved = true,
+            isApproved = statusAprovacao.Aprovado,
             IsAdmin = true,
         };
 

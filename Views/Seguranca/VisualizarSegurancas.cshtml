@@ -16,19 +16,26 @@
         <tbody>
             @foreach (var item in Model)
         {
+
+            if (@item.cpf != "12345678912") {
+
             <tr>
+                <!--login do administrador-->
+
                 <td>@item.nome @item.sobreNome</td>
                 <td>@item.cpf</td>
                 <td>@item.matricula</td>
-                
 
-                <td> 
+
+            <td>
                     <!--asp route id serve pra colocar o id desse seguranca como argumento do método UploadContracheque-->
-                    <a asp-action="UploadContracheque" asp-route-id="@item.id" class="btn btn-sm btn-info">
-                        Cadastrar Contracheque
-                    </a>
-                </td>
+            <a asp-action="UploadContracheque" asp-route-id="@item.id" class="btn btn-sm btn-info">
+                Cadastrar Contracheque
+            </a>
+            </td>
             </tr>
+            }
+            
         }
         </tbody>
     </table>

@@ -84,9 +84,13 @@ public class SegurancaController : Controller
 
                     if (resultado == PasswordVerificationResult.Success)
                     {
-                        if (!usuario.isApproved)
+                        if (usuario.isApproved == statusAprovacao.Pendente)
                         {
-                            ModelState.AddModelError(string.Empty, "Usuário não aprovado. Contate o administrador.");
+                            ModelState.AddModelError(string.Empty, "Seu cadastro ainda não foi aprovado. Por favor, aguarde ou contate o administrador");
+                            return View(model);
+                        } else if (usuario.isApproved == statusAprovacao.Rejeitado)
+                        {
+                            ModelState.AddModelError(string.Empty, "Infelizmente seu cadastro foi rejeitado. Por favor, contate o administrador para mais informações.");
                             return View(model);
                         }
 
@@ -154,7 +158,7 @@ public class SegurancaController : Controller
         }
 
         var pendentes = _context.Segurancas
-            .Where(s => s.isApproved == false)
+            .Where(s => s.isApproved == statusAprovacao.Pendente)
             .ToList();
 
         return View(pendentes);
@@ -168,7 +172,7 @@ public class SegurancaController : Controller
 
         if (usuario != null)
         {
-            usuario.isApproved = true;
+            usuario.isApproved = statusAprovacao.Aprovado;
             _context.Update(usuario);
             await _context.SaveChangesAsync();
         }
@@ -176,6 +180,20 @@ public class SegurancaController : Controller
         return RedirectToAction("PainelAdmin");
     }
 
+    [HttpPost]
+    public async Task<IActionResult> Rejeitar(int id)
+    {
+        var usuario = await _context.Segurancas.FindAsync(id);
+
+        if (usuario != null)
+        {
+            usuario.isApproved = statusAprovacao.Rejeitado;
+            _context.Update(usuario);
+            await _context.SaveChangesAsync();
+        }
+
+        return RedirectToAction("PainelAdmin");
+    }
 
 
 
@@ -227,7 +245,7 @@ public class SegurancaController : Controller
         {
             return Forbid();
         }
-        var segurancas = _context.Segurancas.Where(s => s.isApproved == true).ToList();
+        var segurancas = _context.Segurancas.Where(s => s.isApproved == statusAprovacao.Aprovado).ToList();
         return View(segurancas);
     }
 

@@ -2,6 +2,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace appSegurancas.Models;
 
+public enum statusAprovacao
+{
+    Pendente,
+    Aprovado,
+    Rejeitado
+}
+
 public class Seguranca
 {
     public int id { get; set; }
@@ -28,7 +35,7 @@ public class Seguranca
 
     public string role { get; set; } = "User";
 
-    public bool isApproved { get; set; } = false;
+    public statusAprovacao isApproved { get; set; } = statusAprovacao.Pendente;
 
     public bool IsAdmin { get; set; } = false;
 
@@ -36,6 +43,8 @@ public class Seguranca
     public DateTime updatedAt { get; set; } = DateTime.Now;
 
     public List<Contracheque> Contracheques { get; set; } = new();
+
+    
 
 
 }
