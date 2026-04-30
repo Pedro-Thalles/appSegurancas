@@ -177,7 +177,7 @@ public class SegurancaController : Controller
             await _context.SaveChangesAsync();
         }
 
-        return RedirectToAction("PainelAdmin");
+        return RedirectToAction("AprovarSeguranca");
     }
 
     [HttpPost]
@@ -192,7 +192,7 @@ public class SegurancaController : Controller
             await _context.SaveChangesAsync();
         }
 
-        return RedirectToAction("PainelAdmin");
+        return RedirectToAction("AprovarSeguranca");
     }
 
 
