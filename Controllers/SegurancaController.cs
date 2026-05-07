@@ -56,146 +56,7 @@ public class SegurancaController : Controller
         return View(seguranca);
     }
 
-    public IActionResult Login()
-    {
-        return View();
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Login(LoginViewModel model)
-    {
-        if (ModelState.IsValid)
-        {
-
-            if(model.cpf == "12345678912")
-            {
-                ModelState.AddModelError(string.Empty, "Impossível logar como administrador. Acesse a página Admin.");
-                return View(model);
-            }
-
-
-            var usuario = _context.Segurancas.FirstOrDefault(s => s.cpf == model.cpf);
-
-            if (usuario != null)
-            {
-                try
-                {
-                    var resultado = _passwordHasher.VerifyHashedPassword(usuario, usuario.passwordHash, model.senha);
-
-                    if (resultado == PasswordVerificationResult.Success)
-                    {
-                        if (usuario.isApproved == statusAprovacao.Pendente)
-                        {
-                            ModelState.AddModelError(string.Empty, "Seu cadastro ainda não foi aprovado. Por favor, aguarde ou contate o administrador");
-                            return View(model);
-                        } else if (usuario.isApproved == statusAprovacao.Rejeitado)
-                        {
-                            ModelState.AddModelError(string.Empty, "Infelizmente seu cadastro foi rejeitado. Por favor, contate o administrador para mais informações.");
-                            return View(model);
-                        }
-
-                        var claims = new List<Claim>
-                        {
-                            new Claim(ClaimTypes.Name, usuario.nome),
-                            new Claim(ClaimTypes.NameIdentifier, usuario.id.ToString()),
-                            new Claim(ClaimTypes.Role, "Seguranca")
-                        };
-
-                        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                        var authProperties = new AuthenticationProperties { IsPersistent = true };
-
-                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
-
-
-                        //esse é o objetivo, se chegar aqui, mata o login
-                        //return RedirectToAction("MeusContracheques", new { id = usuario.id });
-                        
-                        return RedirectToAction("Index", "Home");
-
-                    }
-                    ViewBag.Erro = "Senha incorreta.";
-                    return View();
-
-                }
-                catch (Exception)
-                {
-                    ModelState.AddModelError(string.Empty, "Você precisa mudar sua senha");
-                    return View(model);
-                }
-                
-            }
-
-            ModelState.AddModelError(string.Empty, "CPF ou senha inválidos.");
-
-        }
-
-        return View(model);
-
-    }
-
-    [Authorize]
-    public IActionResult PainelAdmin()
-    {
-
-        if (!User.HasClaim("Perfil", "Admin"))
-        {
-            return Forbid();
-        }
-
-        return View();
-    }
-
-
-
-
-    // GET: /Seguranca/PainelAdmin
-    [Authorize]
-    public IActionResult AprovarSeguranca()
-    {
-        if (!User.HasClaim("Perfil", "Admin"))
-        {
-            return Forbid();
-        }
-
-        var pendentes = _context.Segurancas
-            .Where(s => s.isApproved == statusAprovacao.Pendente)
-            .ToList();
-
-        return View(pendentes);
-    }
-
-    // POST: /Seguranca/Aprovar/5
-    [HttpPost]
-    public async Task<IActionResult> Aprovar(int id)
-    {
-        var usuario = await _context.Segurancas.FindAsync(id);
-
-        if (usuario != null)
-        {
-            usuario.isApproved = statusAprovacao.Aprovado;
-            _context.Update(usuario);
-            await _context.SaveChangesAsync();
-        }
-
-        return RedirectToAction("AprovarSeguranca");
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Rejeitar(int id)
-    {
-        var usuario = await _context.Segurancas.FindAsync(id);
-
-        if (usuario != null)
-        {
-            usuario.isApproved = statusAprovacao.Rejeitado;
-            _context.Update(usuario);
-            await _context.SaveChangesAsync();
-        }
-
-        return RedirectToAction("AprovarSeguranca");
-    }
-
-
+    
 
     // GET: /Seguranca/MeusContracheques/5
     [Authorize]
@@ -218,101 +79,10 @@ public class SegurancaController : Controller
 
         if (usuario == null) return NotFound();
 
+        usuario.Contracheques = usuario.Contracheques.OrderBy(c => c.mesUpload).ToList();
+     
         return View(usuario.Contracheques);
     }
-
-    /*public async Task<IActionResult> GerarDadosTeste(int id)
-    {
-        var novoContracheque = new Contracheque
-        {
-            // Removi o id fixo para o banco gerar automático
-            MesUpload = 4,
-            AnoUpload = 2026,
-            segurancaId = id // <--- Isso aqui é o que "cola" o dado no segurança certo!
-        };
-
-        _context.Contracheques.Add(novoContracheque);
-        await _context.SaveChangesAsync();
-
-        return Content($"Gerado para o Segurança {id}!");
-    }*/
-
-    //GET: /Seguranca/VisualizarSegurancas
-    [Authorize]
-    public IActionResult VisualizarSegurancas()
-    {
-        if (!User.HasClaim("Perfil", "Admin"))
-        {
-            return Forbid();
-        }
-        var segurancas = _context.Segurancas.Where(s => s.isApproved == statusAprovacao.Aprovado).ToList();
-        return View(segurancas);
-    }
-
-
-    // GET: /Seguranca/UploadContracheque/5
-    [Authorize]
-    public IActionResult UploadContracheque(int id)
-    {
-        if (!User.HasClaim("Perfil", "Admin"))
-        {
-            return Forbid();
-        }
-        var seguranca = _context.Segurancas.Find(id);
-        if (seguranca == null) return NotFound();
-
-        var model = new ContrachequeViewModel
-        {
-            segurancaId = id,
-            nomeSeguranca = seguranca.nome
-        };
-
-        return View(model);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> UploadContracheque(ContrachequeViewModel model)
-    {
-        ModelState.Remove("nomeSeguranca"); // Remove a validação do nome, pois ele não é enviado no formulário
-        if (ModelState.IsValid)
-        {
-            if (model.arquivoPdf != null && model.arquivoPdf.Length > 0)
-            {
-                // Definir o nome do arquivo
-                string nomeArquivo = $"Contracheque_{model.segurancaId}_{model.mesUpload}_{model.anoUpload}.pdf";
-
-                // Caminho onde será salvo 
-                string caminhoPasta = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "contracheques");
-                string caminhoCompleto = Path.Combine(caminhoPasta, nomeArquivo);
-
-                // Salvar o arquivo físico no HD
-                using (var stream = new FileStream(caminhoCompleto, FileMode.Create))
-                {
-                    await model.arquivoPdf.CopyToAsync(stream);
-                }
-
-                // Salvar as informações no Banco de Dados
-                var novoContracheque = new Contracheque
-                {
-                    mesUpload = model.mesUpload,
-                    anoUpload = model.anoUpload,
-                    segurancaId = model.segurancaId,
-                    
-                    filePath = $"/uploads/contracheques/{nomeArquivo}"
-                };
-
-                _context.Contracheques.Add(novoContracheque);
-                await _context.SaveChangesAsync();
-                Console.WriteLine("TESTE");
-                return RedirectToAction("VisualizarSegurancas");
-            }
-        }
-
-        Console.WriteLine("ModelState inválido ou arquivo não selecionado.");
-
-        return View(model);
-    }
-
 
     // GET: /Seguranca/DownloadContracheque/5
     public IActionResult DownloadContracheque(int id)
@@ -345,57 +115,91 @@ public class SegurancaController : Controller
         return File(bytes, "application/pdf", nomeParaDownload);
     }
 
+    //####################### LOGIN E LOGOUT #######################
+
+    public IActionResult Login()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Login(LoginViewModel model)
+    {
+        if (ModelState.IsValid)
+        {
+
+            if (model.cpf == "12345678912")
+            {
+                ModelState.AddModelError(string.Empty, "Impossível logar como administrador. Acesse a página Admin.");
+                return View(model);
+            }
+
+
+            var usuario = _context.Segurancas.FirstOrDefault(s => s.cpf == model.cpf);
+
+            if (usuario != null)
+            {
+                try
+                {
+                    var resultado = _passwordHasher.VerifyHashedPassword(usuario, usuario.passwordHash, model.senha);
+
+                    if (resultado == PasswordVerificationResult.Success)
+                    {
+                        if (usuario.isApproved == statusAprovacao.Pendente)
+                        {
+                            ModelState.AddModelError(string.Empty, "Seu cadastro ainda não foi aprovado. Por favor, aguarde ou contate o administrador");
+                            return View(model);
+                        }
+                        else if (usuario.isApproved == statusAprovacao.Rejeitado)
+                        {
+                            ModelState.AddModelError(string.Empty, "Infelizmente seu cadastro foi rejeitado. Por favor, contate o administrador para mais informações.");
+                            return View(model);
+                        }
+
+                        var claims = new List<Claim>
+                        {
+                            new Claim(ClaimTypes.Name, usuario.nome),
+                            new Claim(ClaimTypes.NameIdentifier, usuario.id.ToString()),
+                            new Claim(ClaimTypes.Role, "Seguranca"),
+                        };
+
+                        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                        var authProperties = new AuthenticationProperties { IsPersistent = true };
+
+                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+
+
+                        //esse é o objetivo, se chegar aqui, mata o login
+                        //return RedirectToAction("MeusContracheques", new { id = usuario.id });
+
+                        return RedirectToAction("Index", "Home");
+
+                    }
+                    ModelState.AddModelError(string.Empty, "CPF ou senha inválidos.");
+                    ViewBag.Erro = "Senha incorreta.";
+                    return View();
+
+                }
+                catch (Exception)
+                {
+                    ModelState.AddModelError(string.Empty, "Você precisa mudar sua senha");
+                    return View(model);
+                }
+
+            }
+
+            ModelState.AddModelError(string.Empty, "CPF ou senha inválidos.");
+
+        }
+
+        return View(model);
+
+    }
+
 
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return RedirectToAction("Index", "Home");
     }
-
-
-    // GET: /Seguranca/Admin
-    public IActionResult Admin()
-    {
-        // Se já estiver logado como admin, vai direto pro painel
-        if (User.Identity.IsAuthenticated && User.HasClaim("Perfil", "Admin"))
-        {
-            return RedirectToAction("PainelAdmin");
-        }
-        Console.WriteLine("ENTREI NO ADMIN");
-        return View();
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Admin(string login, string senha)
-    {
-        // Busca o admin único no banco
-        var admin = _context.Segurancas.FirstOrDefault(s => s.IsAdmin == true && s.cpf == login);
-
-        if (admin != null)
-        {
-           
-            var resultado = _passwordHasher.VerifyHashedPassword(admin, admin.passwordHash, senha);
-
-            if (resultado == PasswordVerificationResult.Success)
-            {
-                var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, "Administrador"),
-                new Claim(ClaimTypes.NameIdentifier, admin.id.ToString()),
-                new Claim("Perfil", "Admin") // Claim crucial para diferenciar
-            };
-
-                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
-
-                return RedirectToAction("PainelAdmin");
-            }
-        }
-
-        ViewBag.Erro = "Acesso administrativo negado.";
-        ModelState.AddModelError(string.Empty, "Acesso administrativo negado");
-        return View();
-    }
-
-
 }

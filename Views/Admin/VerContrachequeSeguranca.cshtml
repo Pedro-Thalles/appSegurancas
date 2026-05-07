@@ -1,0 +1,35 @@
+@model DetalhesContrachequeViewModel
+
+    @{ ViewData["Title"] = "Contracheques do Segurança"; }
+
+
+    <h2>Contracheques de @Model.nomeSeguranca</h2>
+
+    <table class="table table-hover mt-4">
+        <thead class="table-dark">
+            <tr>
+
+                <th>Mês</th>
+                <th>Ano</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.contracheques)
+        {
+            <tr>
+                <td>@item.mesUpload</td>
+                <td>@item.anoUpload</td>
+                <td>
+                    <form asp-action="ExcluirContracheque" asp-route-id="@item.id" method="post" onsubmit="return confirm('Tem certeza que deseja excluir esse contracheque?');">
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            Excluir
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    <a asp-action="UploadContracheque" asp-route-id="@Model.segurancaId" class="btn btn-sm btn-success">Novo Contracheque</a>
+    <a asp-action="VisualizarSegurancas" class="btn btn-secondary">Voltar</a>
