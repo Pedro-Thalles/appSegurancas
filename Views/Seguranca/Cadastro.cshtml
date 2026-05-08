@@ -4,11 +4,15 @@
     ViewData["Title"] = "Cadastro de Segurança";
 }
 <!--asp-for serve para encontrar a variavel na classe de Seguranca -->
-<h2>Cadastrar Novo Segurança</h2>
+@if (Model.isApproved == statusAprovacao.EmEdicao){
+<h2 class="alert alert-warning">Edite seu Cadastro</h2>
+} else {<h2>Cadastrar Novo Segurança</h2>}
+
 
 <div class="row">
     <div class="col-md-6">
         <form asp-action="Cadastro" method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group mb-3">
                 <label asp-for="nome" class="control-label"></label>
                 <input asp-for="nome" class="form-control" />
@@ -41,7 +45,7 @@
             </div>
 
             <button type="submit" class="btn btn-primary">Finalizar Cadastro</button>
-            
+
         </form>
     </div>
 </div>

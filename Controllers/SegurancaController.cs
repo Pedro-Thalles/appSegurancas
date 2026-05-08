@@ -45,9 +45,35 @@ public class SegurancaController : Controller
 
         if (ModelState.IsValid)
         {
+            //consulta se já existe um cadastro com aquele cpf.
+            var segurancaExistente = _context.Segurancas.FirstOrDefault(s => s.cpf == seguranca.cpf);
+            //Se já existir, e estiver em edição, atualiza os dados e a senha, e manda pra login.
+            if (segurancaExistente != null && segurancaExistente.isApproved == statusAprovacao.EmEdicao) { 
             
-            seguranca.passwordHash = _passwordHasher.HashPassword(seguranca, senhaPura);
+                segurancaExistente.nome = seguranca.nome;
+                segurancaExistente.sobreNome = seguranca.sobreNome;
+                segurancaExistente.email = seguranca.email;
+                segurancaExistente.matricula = seguranca.matricula;
+                segurancaExistente.passwordHash = _passwordHasher.HashPassword(segurancaExistente, senhaPura);
+                segurancaExistente.isApproved = statusAprovacao.Pendente;
+                segurancaExistente.updatedAt = DateTime.Now;
+                _context.Segurancas.Update(segurancaExistente);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Login");
 
+            }
+            //Se já existir, e não estiver em edição, mostra mensagem de erro.
+            if (segurancaExistente != null && segurancaExistente.isApproved != statusAprovacao.EmEdicao)
+            {
+
+                ModelState.AddModelError(string.Empty, "Já existe uma conta para esse CPF");
+                Console.WriteLine("#\n#\n#\n#\n#JA EXISTE UM CPF ASSIM\n#\n#\n#\n#\n#\n");
+                return View(seguranca);
+            }
+
+            //Se não existir, cria um novo cadastro normalmente.
+
+            seguranca.passwordHash = _passwordHasher.HashPassword(seguranca, senhaPura);
             _context.Segurancas.Add(seguranca);
             await _context.SaveChangesAsync();
 
@@ -154,6 +180,11 @@ public class SegurancaController : Controller
                         {
                             ModelState.AddModelError(string.Empty, "Infelizmente seu cadastro foi rejeitado. Por favor, contate o administrador para mais informações.");
                             return View(model);
+                        }
+
+                        else if (usuario.isApproved == statusAprovacao.EmEdicao)
+                        {
+                            return View("Cadastro", usuario);
                         }
 
                         var claims = new List<Claim>

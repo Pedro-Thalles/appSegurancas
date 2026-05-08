@@ -6,7 +6,8 @@ public enum statusAprovacao
 {
     Pendente,
     Aprovado,
-    Rejeitado
+    Rejeitado,
+    EmEdicao
 }
 
 public class Seguranca

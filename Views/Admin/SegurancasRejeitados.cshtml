@@ -2,7 +2,7 @@
 
     @{ ViewData["Title"] = "Painel de Aprovação"; }
 
-    <h2>Seguranças Aguardando Aprovação</h2>
+    <h2>Seguranças Rejeitados</h2>
 
     <table class="table table-striped mt-4">
         <thead>
@@ -22,15 +22,22 @@
                 <td>@item.matricula</td>
                 <td>
                     <form method="post">
-                        <button type="submit" class="btn btn-sm btn-success" asp-action="Aprovar" asp-route-id="@item.id">Aprovar</button>
-                        <button type="submit" class="btn btn-sm btn-danger" asp-action="Rejeitar" asp-route-id="@item.id">Rejeitar</button>
+                        <button type="submit" class="btn btn-sm btn-warning" asp-action="SolicitarEdicao" asp-route-id="@item.id">Solicitar Edição</button>
+                        @if(item.isApproved == statusAprovacao.EmEdicao) {
+
+                        <span class="btn btn-sm btn-info">Editando</span>
+
+                        }
+                        
                     </form>
+
                 </td>
+               
             </tr>
         }
 
 
         </tbody>
     </table>
-    <a asp-for="Admin" asp-action="SegurancasRejeitados" class="btn btn-success">Cadastros Rejeitados</a>
-    <a asp-for="Admin" asp-action="PainelAdmin" class="btn btn-secondary">Voltar</a>
+
+    <a class="btn btn-secondary" asp-action="AprovarSeguranca">Voltar</a>

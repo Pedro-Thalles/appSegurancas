@@ -135,25 +135,6 @@ public class AdminController : Controller {
         return View(segurancas);
     }
 
-    /*[Authorize]
-    public IActionResult VerContrachequeSeguranca(int id) { 
-    
-        if (!User.HasClaim("Perfil", "Admin"))
-        {
-            return Forbid();
-        }
-        var contracheques = _context.Contracheques
-            .Include(c => c.seguranca)
-            .Where(c => c.segurancaId == id)
-            .OrderBy(c => c.mesUpload)
-            .ToList();
-
-        if (contracheques == null || !contracheques.Any()) return View(); //NotFound();
-
-        return View(contracheques);
-
-    }*/
-
     [Authorize]
     public IActionResult VerContrachequeSeguranca(int id)
     {
@@ -293,6 +274,60 @@ public class AdminController : Controller {
 
         return RedirectToAction("VerContrachequeSeguranca", new { id = segurancaId });
 
+    }
+
+    [Authorize]
+    public IActionResult SegurancasRejeitados()
+    {
+        if (!User.HasClaim("Perfil", "Admin"))
+        {
+            return Forbid();
+        }
+        var segurancas = _context.Segurancas.Where(s => s.isApproved != statusAprovacao.Aprovado && s.isApproved != statusAprovacao.Pendente).ToList();
+        return View(segurancas);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> SolicitarEdicao(int id)
+    {
+
+        if (!User.HasClaim("Perfil", "Admin"))
+        {
+            return Forbid();
+        }
+
+        var seguranca = await _context.Segurancas.FindAsync(id);
+
+        if(seguranca == null) return NotFound();
+
+        if(seguranca.isApproved != statusAprovacao.Rejeitado)
+        {
+            ModelState.AddModelError(string.Empty, "Só é possível solicitar edição para contas rejeitadas.");
+            return RedirectToAction("SegurancasRejeitados");
+        }
+
+        if(seguranca.isApproved == statusAprovacao.EmEdicao)
+        {
+            ModelState.AddModelError(string.Empty, "Edição já solicitada para essa conta.");
+            return RedirectToAction("SegurancasRejeitados");
+        }
+
+        if(seguranca.isApproved == statusAprovacao.Pendente || seguranca.isApproved == statusAprovacao.Aprovado)
+        {
+            ModelState.AddModelError(string.Empty, "Só é possível solicitar edição para contas rejeitadas.");
+            return RedirectToAction("SegurancasRejeitados");
+        }
+
+        seguranca.isApproved = statusAprovacao.EmEdicao;
+
+        _context.Update(seguranca);
+        await _context.SaveChangesAsync();
+
+
+        //Quando a pessoa faz o cadastro, a conta já é criada. A linha no banco é criada. 
+        //Então eu preciso modificar o status dessa conta de modo que a pessoa saiba que pode editar os dados.
+
+        return RedirectToAction("SegurancasRejeitados");
     }
 
 }
