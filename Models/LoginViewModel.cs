@@ -9,4 +9,14 @@ public class LoginViewModel
 	[Required(ErrorMessage = "A senha é obrigatória")]
 	[DataType(DataType.Password)]
 	public string senha { get; set; }
+
+	public LoginViewModel(string cpf, string senha)
+	{
+		this.cpf = cpf;
+		this.senha = senha;
+	}
+
+	public LoginViewModel() { }
+
+
 }

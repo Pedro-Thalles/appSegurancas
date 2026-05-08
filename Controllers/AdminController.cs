@@ -173,14 +173,7 @@ public class AdminController : Controller {
             .OrderBy(c => c.mesUpload)
             .ToList();
 
-        var viewModel = new DetalhesContrachequeViewModel
-        {
-
-            segurancaId = id,
-            nomeSeguranca = seguranca.nome,
-            contracheques = listaContracheques
-
-        };
+        var viewModel = new DetalhesContrachequeViewModel(id, seguranca.nome, listaContracheques);
 
         return View(viewModel);
 
