@@ -28,10 +28,12 @@ public class SegurancaController : Controller
     }
 
     // GET: /Seguranca/Cadastro
-    // Abre a p·gina com o formul·rio vazio
+    // Abre a p√°gina com o formul√°rio vazio
     public IActionResult Cadastro()
     {
-        return View();
+
+        var seguranca = new Seguranca();
+        return View(seguranca);
     }
 
 
@@ -45,9 +47,9 @@ public class SegurancaController : Controller
 
         if (ModelState.IsValid)
         {
-            //consulta se j· existe um cadastro com aquele cpf.
+            //consulta se j√° existe um cadastro com aquele cpf.
             var segurancaExistente = _context.Segurancas.FirstOrDefault(s => s.cpf == seguranca.cpf);
-            //Se j· existir, e estiver em ediÁ„o, atualiza os dados e a senha, e manda pra login.
+            //Se j√° existir, e estiver em edi√ß√£o, atualiza os dados e a senha, e manda pra login.
             if (segurancaExistente != null && segurancaExistente.isApproved == statusAprovacao.EmEdicao) { 
             
                 segurancaExistente.nome = seguranca.nome;
@@ -62,22 +64,22 @@ public class SegurancaController : Controller
                 return RedirectToAction("Login");
 
             }
-            //Se j· existir, e n„o estiver em ediÁ„o, mostra mensagem de erro.
+            //Se j√° existir, e n√£o estiver em edi√ß√£o, mostra mensagem de erro.
             if (segurancaExistente != null && segurancaExistente.isApproved != statusAprovacao.EmEdicao)
             {
 
-                ModelState.AddModelError(string.Empty, "J· existe uma conta para esse CPF");
+                ModelState.AddModelError(string.Empty, "J√° existe uma conta para esse CPF");
                 Console.WriteLine("#\n#\n#\n#\n#JA EXISTE UM CPF ASSIM\n#\n#\n#\n#\n#\n");
                 return View(seguranca);
             }
 
-            //Se n„o existir, cria um novo cadastro normalmente.
+            //Se n√£o existir, cria um novo cadastro normalmente.
 
             seguranca.passwordHash = _passwordHasher.HashPassword(seguranca, senhaPura);
             _context.Segurancas.Add(seguranca);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Login"); // Manda pra home apÛs salvar
+            return RedirectToAction("Login"); // Manda pra home ap√≥s salvar
         }
         return View(seguranca);
     }
@@ -118,23 +120,23 @@ public class SegurancaController : Controller
 
         if (contracheque == null || string.IsNullOrEmpty(contracheque.filePath))
         {
-            return NotFound("Arquivo n„o encontrado no banco de dados.");
+            return NotFound("Arquivo n√£o encontrado no banco de dados.");
         }
 
-        // 2. Monta o caminho fÌsico completo no servidor
+        // 2. Monta o caminho f√≠sico completo no servidor
         // O Path.Combine garante que funcione em qualquer sistema (Windows/Linux)
         var caminhoArquivo = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", contracheque.filePath.TrimStart('/'));
 
-        // 3. Verifica se o arquivo fÌsico REALMENTE existe na pasta
+        // 3. Verifica se o arquivo f√≠sico REALMENTE existe na pasta
         if (!System.IO.File.Exists(caminhoArquivo))
         {
-            return NotFound("O arquivo fÌsico n„o foi encontrado na pasta de uploads.");
+            return NotFound("O arquivo f√≠sico n√£o foi encontrado na pasta de uploads.");
         }
 
-        // 4. LÍ os bytes do arquivo
+        // 4. L√™ os bytes do arquivo
         var bytes = System.IO.File.ReadAllBytes(caminhoArquivo);
 
-        // 5. Define o nome que o arquivo ter· quando o usu·rio baixar
+        // 5. Define o nome que o arquivo ter√° quando o usu√°rio baixar
         string nomeParaDownload = $"Contracheque_{contracheque.mesUpload}_{contracheque.anoUpload}.pdf";
 
         // 6. Retorna o arquivo para o navegador
@@ -156,7 +158,7 @@ public class SegurancaController : Controller
 
             if (model.cpf == "12345678912")
             {
-                ModelState.AddModelError(string.Empty, "ImpossÌvel logar como administrador. Acesse a p·gina Admin.");
+                ModelState.AddModelError(string.Empty, "Imposs√≠vel logar como administrador. Acesse a p√°gina Admin.");
                 return View(model);
             }
 
@@ -173,12 +175,12 @@ public class SegurancaController : Controller
                     {
                         if (usuario.isApproved == statusAprovacao.Pendente)
                         {
-                            ModelState.AddModelError(string.Empty, "Seu cadastro ainda n„o foi aprovado. Por favor, aguarde ou contate o administrador");
+                            ModelState.AddModelError(string.Empty, "Seu cadastro ainda n√£o foi aprovado. Por favor, aguarde ou contate o administrador");
                             return View(model);
                         }
                         else if (usuario.isApproved == statusAprovacao.Rejeitado)
                         {
-                            ModelState.AddModelError(string.Empty, "Infelizmente seu cadastro foi rejeitado. Por favor, contate o administrador para mais informaÁıes.");
+                            ModelState.AddModelError(string.Empty, "Infelizmente seu cadastro foi rejeitado. Por favor, contate o administrador para mais informa√ß√µes.");
                             return View(model);
                         }
 
@@ -200,26 +202,26 @@ public class SegurancaController : Controller
                         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
 
-                        //esse È o objetivo, se chegar aqui, mata o login
+                        //esse √© o objetivo, se chegar aqui, mata o login
                         //return RedirectToAction("MeusContracheques", new { id = usuario.id });
 
                         return RedirectToAction("Index", "Home");
 
                     }
-                    ModelState.AddModelError(string.Empty, "CPF ou senha inv·lidos.");
+                    ModelState.AddModelError(string.Empty, "CPF ou senha inv√°lidos.");
                     ViewBag.Erro = "Senha incorreta.";
                     return View();
 
                 }
                 catch (Exception)
                 {
-                    ModelState.AddModelError(string.Empty, "VocÍ precisa mudar sua senha");
+                    ModelState.AddModelError(string.Empty, "Voc√™ precisa mudar sua senha");
                     return View(model);
                 }
 
             }
 
-            ModelState.AddModelError(string.Empty, "CPF ou senha inv·lidos.");
+            ModelState.AddModelError(string.Empty, "CPF ou senha inv√°lidos.");
 
         }
 
