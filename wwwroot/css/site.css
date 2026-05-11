@@ -35,3 +35,8 @@ body {
     background-color: #496da7;
     border-color: #496da7;
 }
+
+.ancora-sem-link {
+    color: #fff !important;
+    text-decoration: none;
+}

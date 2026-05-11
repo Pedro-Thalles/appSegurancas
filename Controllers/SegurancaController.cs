@@ -29,6 +29,7 @@ public class SegurancaController : Controller
 
     // GET: /Seguranca/Cadastro
     // Abre a página com o formulário vazio
+    [HttpGet]
     public IActionResult Cadastro()
     {
 
@@ -39,7 +40,7 @@ public class SegurancaController : Controller
 
     // POST: /Seguranca/Cadastro
     [HttpPost]
-    public async Task<IActionResult> Cadastro(Seguranca seguranca, string senhaPura)
+    public async Task<IActionResult> Cadastro(Seguranca seguranca, string senhaPura, string senhaConfirm)
     {
         ModelState.Remove("Contracheques");
         ModelState.Remove("role");
@@ -47,8 +48,20 @@ public class SegurancaController : Controller
 
         if (ModelState.IsValid)
         {
-            //consulta se já existe um cadastro com aquele cpf.
             var segurancaExistente = _context.Segurancas.FirstOrDefault(s => s.cpf == seguranca.cpf);
+
+            if(senhaPura != senhaConfirm)
+            {
+                
+                ModelState.AddModelError(string.Empty, "As senhas não coincidem.");
+                if(segurancaExistente != null && segurancaExistente.isApproved == statusAprovacao.EmEdicao)
+                {
+                    return View(segurancaExistente);
+                }
+                return View(seguranca);
+            }
+            //consulta se já existe um cadastro com aquele cpf.
+            
             //Se já existir, e estiver em edição, atualiza os dados e a senha, e manda pra login.
             if (segurancaExistente != null && segurancaExistente.isApproved == statusAprovacao.EmEdicao) { 
             
@@ -70,6 +83,7 @@ public class SegurancaController : Controller
 
                 ModelState.AddModelError(string.Empty, "Já existe uma conta para esse CPF");
                 Console.WriteLine("#\n#\n#\n#\n#JA EXISTE UM CPF ASSIM\n#\n#\n#\n#\n#\n");
+                
                 return View(seguranca);
             }
 

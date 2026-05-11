@@ -33,8 +33,12 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
 
-                        <li class="nav-item">
-                            <strong><a class="nav-link text-danger" asp-area="" asp-controller="Seguranca" asp-action="Logout">Sair</a></strong>
+                        <!--<li class="nav-item">
+                            --<strong><a class="nav-link text-danger" asp-area="" asp-controller="Seguranca" asp-action="Logout" onclick="return confirm('Tem certeza que deseja sair da sua conta?')">Sair</a></strong>-
+                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#modalSair">Sair</button>
+                        </li>-->
+                        <li>
+                            <a href="/Seguranca/Logout" id="btn-sair" class="btn btn-sm btn-danger ancora-sem-link">Sair</a>
                         </li>
 
 
@@ -60,5 +64,34 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+   <!-- 
+    <div class="modal fade" id="modalSair" tabindex="-1" aria-labelledby="modalSairLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+    
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalSairLabel">Confirmar Saída</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+    
+                <div class="modal-body">
+                    Você tem certeza que deseja encerrar sua sessão?
+                </div>
+
+    
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+
+    
+                    <a asp-controller="Seguranca" asp-action="Logout" class="btn btn-danger">Sim, quero sair</a>
+                </div>
+
+            </div>
+        </div>
+    </div> -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>
