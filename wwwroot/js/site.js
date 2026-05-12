@@ -36,6 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.querySelectorAll('.btn-confirmar').forEach(botao => {
         botao.addEventListener('click', function (e) {
+            e.preventDefault();
             const botaoClicado = e.target;
             const acao = botaoClicado.innerText; // "Aprovar" ou "Rejeitar"
 

@@ -3,6 +3,21 @@
     @{ ViewData["Title"] = "Painel de Aprovados"; }
 
     <h2>Seguranças Aprovados</h2>
+   
+    <form asp-action="PesquisarSegurancaAprovado" method="get">
+        <div class="input-group mb-3">
+            <button class=" input-group-text" type="submit">
+                <i class="bi bi-search"></i>
+            </button>
+            <input type="text" name="pesquisa" class="form-control" />
+            <a class=" input-group-text" type="button" asp-for="Admin" asp-action="VisualizarSegurancas">
+                <i class="bi bi-x-lg"></i>
+            </a>
+        </div>
+    </form>
+        
+    
+    
 
     <table class="table table-striped mt-4">
         <thead>

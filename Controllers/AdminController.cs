@@ -93,6 +93,29 @@ public class AdminController : Controller {
         return View(pendentes);
     }
 
+    [Authorize]
+    public IActionResult PesquisarSegurancaPendente(string pesquisa)
+    {
+
+        if (!User.HasClaim("Perfil", "Admin"))
+        {
+            return Forbid();
+        }
+
+        if (string.IsNullOrEmpty(pesquisa))
+        {
+            return RedirectToAction("AprovarSeguranca");
+        }
+
+        var segurancas = _context.Segurancas
+            .Where(s => s.isApproved == statusAprovacao.Pendente &&
+                   (s.nome.Contains(pesquisa) || s.sobreNome.Contains(pesquisa) || s.cpf.Contains(pesquisa) || s.matricula.Contains(pesquisa)))
+            .ToList();
+
+        return View("AprovarSeguranca", segurancas);
+
+    }
+
     // POST: /Seguranca/Aprovar/5
     [HttpPost]
     public async Task<IActionResult> Aprovar(int id)
@@ -134,6 +157,30 @@ public class AdminController : Controller {
         var segurancas = _context.Segurancas.Where(s => s.isApproved == statusAprovacao.Aprovado).ToList();
         return View(segurancas);
     }
+
+    [Authorize]
+    public IActionResult PesquisarSegurancaAprovado(string pesquisa) 
+    {
+
+        if (!User.HasClaim("Perfil", "Admin"))
+        { 
+            return Forbid();
+        }
+
+        if(string.IsNullOrEmpty(pesquisa))
+        {
+            return RedirectToAction("VisualizarSegurancas");
+        }
+
+        var segurancas = _context.Segurancas
+            .Where(s => s.isApproved == statusAprovacao.Aprovado &&
+                   (s.nome.Contains(pesquisa) || s.sobreNome.Contains(pesquisa) || s.cpf.Contains(pesquisa) || s.matricula.Contains(pesquisa)))
+            .ToList();
+
+        return View("VisualizarSegurancas", segurancas);
+
+    }
+
 
     [Authorize]
     public IActionResult VerContrachequeSeguranca(int id)
@@ -285,6 +332,29 @@ public class AdminController : Controller {
         }
         var segurancas = _context.Segurancas.Where(s => s.isApproved != statusAprovacao.Aprovado && s.isApproved != statusAprovacao.Pendente).ToList();
         return View(segurancas);
+    }
+
+    [Authorize]
+    public IActionResult PesquisarSegurancaRejeitado(string pesquisa)
+    {
+
+        if (!User.HasClaim("Perfil", "Admin"))
+        {
+            return Forbid();
+        }
+
+        if (string.IsNullOrEmpty(pesquisa))
+        {
+            return RedirectToAction("SegurancasRejeitados");
+        }
+
+        var segurancas = _context.Segurancas
+            .Where(s => (s.isApproved == statusAprovacao.Rejeitado || s.isApproved == statusAprovacao.EmEdicao) &&
+                   (s.nome.Contains(pesquisa) || s.sobreNome.Contains(pesquisa) || s.cpf.Contains(pesquisa) || s.matricula.Contains(pesquisa)))
+            .ToList();
+
+        return View("SegurancasRejeitados", segurancas);
+
     }
 
     [HttpPost]

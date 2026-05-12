@@ -3,6 +3,17 @@
     @{ ViewData["Title"] = "Painel de Aprovação"; }
 
     <h2>Seguranças Aguardando Aprovação</h2>
+    <form asp-action="PesquisarSegurancaPendente" method="get">
+        <div class="input-group mb-3">
+            <button class=" input-group-text" type="submit">
+                <i class="bi bi-search"></i>
+            </button>
+            <input type="text" name="pesquisa" class="form-control" />
+            <a class=" input-group-text" type="button" asp-for="Admin" asp-action="AprovarSeguranca">
+                <i class="bi bi-x-lg"></i>
+            </a>
+        </div>
+    </form>
 
     <table class="table table-striped mt-4">
         <thead>
@@ -10,6 +21,7 @@
                 <th>Nome</th>
                 <th>CPF</th>
                 <th>Matrícula</th>
+                <th>Email</th>
                 <th>Ações</th>
             </tr>
         </thead>
@@ -20,6 +32,7 @@
                 <td>@item.nome @item.sobreNome</td>
                 <td>@item.cpf</td>
                 <td>@item.matricula</td>
+                <td>@item.email</td>
                 <td>
                     <form id="form-acoes-admin" method="post">
                         <button type="button" class="btn btn-sm btn-success btn-confirmar" asp-action="Aprovar" asp-route-id="@item.id">Aprovar</button>

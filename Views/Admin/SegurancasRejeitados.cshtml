@@ -3,6 +3,17 @@
     @{ ViewData["Title"] = "Painel de Aprovação"; }
 
     <h2>Seguranças Rejeitados</h2>
+    <form asp-action="PesquisarSegurancaRejeitado" method="get">
+        <div class="input-group mb-3">
+            <button class=" input-group-text" type="submit">
+                <i class="bi bi-search"></i>
+            </button>
+            <input type="text" name="pesquisa" class="form-control" />
+            <a class=" input-group-text" type="button" asp-for="Admin" asp-action="SegurancasRejeitados">
+                <i class="bi bi-x-lg"></i>
+            </a>
+        </div>
+    </form>
 
     <table class="table table-striped mt-4">
         <thead>
@@ -10,6 +21,7 @@
                 <th>Nome</th>
                 <th>CPF</th>
                 <th>Matrícula</th>
+                <th>Email</th>
                 <th>Ações</th>
             </tr>
         </thead>
@@ -20,19 +32,20 @@
                 <td>@item.nome @item.sobreNome</td>
                 <td>@item.cpf</td>
                 <td>@item.matricula</td>
+                <td>@item.email</td>
                 <td>
                     <form method="post">
-                        <button type="submit" class="btn btn-sm btn-warning" asp-action="SolicitarEdicao" asp-route-id="@item.id">Solicitar Edição</button>
+                        <button type="submit" class="btn btn-sm btn-warning btn-confirmar" asp-action="SolicitarEdicao" asp-route-id="@item.id">Solicitar Edição</button>
                         @if(item.isApproved == statusAprovacao.EmEdicao) {
 
                         <span class="btn btn-sm btn-info">Editando</span>
 
                         }
-                        
+
                     </form>
 
                 </td>
-               
+
             </tr>
         }
 
