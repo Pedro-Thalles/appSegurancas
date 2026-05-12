@@ -39,6 +39,7 @@
                         @if(item.isApproved == statusAprovacao.EmEdicao) {
 
                         <span class="btn btn-sm btn-info">Editando</span>
+                        <button type="submit" class="btn btn-sm btn-danger" asp-for="Admin" asp-action="CancelarEdicao" asp-route-id="@item.id">Cancelar</button>
 
                         }
 

@@ -400,4 +400,25 @@ public class AdminController : Controller {
         return RedirectToAction("SegurancasRejeitados");
     }
 
+    [HttpPost]
+    public async Task<IActionResult> CancelarEdicao(int id)
+    {
+        if (!User.HasClaim("Perfil", "Admin"))
+        {
+            return Forbid();
+        }
+        var seguranca = await _context.Segurancas.FindAsync(id);
+        Console.WriteLine(seguranca.nome);
+        if (seguranca == null) return NotFound();
+        if (seguranca.isApproved != statusAprovacao.EmEdicao)
+        {
+            ModelState.AddModelError(string.Empty, "Só é possível cancelar edição para contas que estão em edição.");
+            return RedirectToAction("SegurancasRejeitados");
+        }
+        seguranca.isApproved = statusAprovacao.Rejeitado;
+        _context.Update(seguranca);
+        await _context.SaveChangesAsync();
+        return RedirectToAction("SegurancasRejeitados");
+    }
+
 }
