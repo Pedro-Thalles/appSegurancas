@@ -9,11 +9,11 @@
         <form asp-action="UploadContracheque" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            @* Campo oculto para manter o ID do segurança *@
+            @* Campo oculto para manter o ID do seguranï¿½a *@
             <input type="hidden" asp-for="segurancaId" />
 
             <div class="form-group mb-3">
-                <label asp-for="mesUpload" class="control-label">Mês</label>
+                <label asp-for="mesUpload" class="control-label">MÃªs</label>
                 <select asp-for="mesUpload" class="form-control">
                     @for (int i = 1; i <= 12; i++) {
                     <option value="@i">@System.Globalization.DateTimeFormatInfo.CurrentInfo.GetMonthName(i)</option>
@@ -32,7 +32,7 @@
             </div>
 
             <button type="submit" class="btn btn-success">Salvar Contracheque</button>
-            <a asp-action="VisualizarSegurancas" class="btn btn-secondary">Voltar</a>
+            <a asp-action="VerContrachequeSeguranca" asp-route-id="@Model.segurancaId" class="btn btn-danger">Cancelar</a>
         </form>
     </div>
 </div>

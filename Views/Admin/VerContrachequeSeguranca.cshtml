@@ -1,17 +1,21 @@
 @model DetalhesContrachequeViewModel
 
-    @{ ViewData["Title"] = "Contracheques do Segurança"; }
+    @{ ViewData["Title"] = "Contracheques do Seguranï¿½a"; }
 
 
     <h2>Contracheques de @Model.nomeSeguranca</h2>
-
+    <a asp-action="VisualizarSegurancas" class="btn btn-sm btn-secondary">
+        <i class="bi bi-arrow-left"></i> Voltar
+    </a>
+    <a asp-action="UploadContracheque" asp-route-id="@Model.segurancaId" class="btn btn-sm btn-success">
+        <i class="bi bi-plus-lg"></i> Novo Contracheque</a>
     <table class="table table-hover mt-4">
         <thead class="table-dark">
             <tr>
 
-                <th>Mês</th>
+                <th>MÃªs</th>
                 <th>Ano</th>
-                <th>Ações</th>
+                <th>AÃ§Ãµes</th>
             </tr>
         </thead>
         <tbody>
@@ -21,8 +25,8 @@
                 <td>@item.mesUpload</td>
                 <td>@item.anoUpload</td>
                 <td>
-                    <form asp-action="ExcluirContracheque" asp-route-id="@item.id" method="post" onsubmit="return confirm('Tem certeza que deseja excluir esse contracheque?');">
-                        <button type="submit" class="btn btn-sm btn-danger">
+                    <form asp-action="ExcluirContracheque" asp-route-id="@item.id" method="post">
+                        <button type="submit" class="btn btn-sm btn-danger btn-confirmar">
                             Excluir
                         </button>
                     </form>
@@ -31,5 +35,5 @@
         }
         </tbody>
     </table>
-    <a asp-action="UploadContracheque" asp-route-id="@Model.segurancaId" class="btn btn-sm btn-success">Novo Contracheque</a>
-    <a asp-action="VisualizarSegurancas" class="btn btn-sm btn-secondary">Voltar</a>
+
+    

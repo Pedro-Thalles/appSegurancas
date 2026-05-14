@@ -1,8 +1,11 @@
 @model IEnumerable<appSegurancas.Models.Seguranca>
-
-    @{ ViewData["Title"] = "Painel de Aprovação"; }
-
-    <h2>Seguranças Rejeitados</h2>
+    @{ ViewData["Title"] = "Painel de AprovaÃ§Ã£o"; }
+    <div class="d-flex gap-3 align-items-center mb-3">
+        <a asp-for="Admin" asp-action="AprovarSeguranca" class="btn btn-sm btn-secondary">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+        <h2>SeguranÃ§as Rejeitados</h2>
+    </div>
     <form asp-action="PesquisarSegurancaRejeitado" method="get">
         <div class="input-group mb-3">
             <button class=" input-group-text" type="submit">
@@ -14,15 +17,14 @@
             </a>
         </div>
     </form>
-
     <table class="table table-striped mt-4">
         <thead>
             <tr>
                 <th>Nome</th>
                 <th>CPF</th>
-                <th>Matrícula</th>
+                <th>MatrÃ­cula</th>
                 <th>Email</th>
-                <th>Ações</th>
+                <th>AÃ§Ãµes</th>
             </tr>
         </thead>
         <tbody>
@@ -35,23 +37,14 @@
                 <td>@item.email</td>
                 <td>
                     <form method="post">
-                        <button type="submit" class="btn btn-sm btn-warning btn-confirmar" asp-action="SolicitarEdicao" asp-route-id="@item.id">Solicitar Edição</button>
+                        <button type="submit" class="btn btn-sm btn-warning btn-confirmar" asp-action="SolicitarEdicao" asp-route-id="@item.id">Solicitar EdiÃ§Ã£o</button>
                         @if(item.isApproved == statusAprovacao.EmEdicao) {
-
                         <span class="btn btn-sm btn-info">Editando</span>
-                        <button type="submit" class="btn btn-sm btn-danger" asp-for="Admin" asp-action="CancelarEdicao" asp-route-id="@item.id">Cancelar</button>
-
+                        <button type="submit" class="btn btn-sm btn-danger btn-confirmar" asp-for="Admin" asp-action="CancelarEdicao" asp-route-id="@item.id">Cancelar</button>
                         }
-
                     </form>
-
                 </td>
-
             </tr>
         }
-
-
         </tbody>
     </table>
-
-    <a class="btn btn-secondary" asp-action="AprovarSeguranca">Voltar</a>

@@ -23,7 +23,7 @@ public class AdminController : Controller {
 
     public IActionResult Index()
     {
-        // Se já estiver logado como admin, vai direto pro painel
+        // Se jï¿½ estiver logado como admin, vai direto pro painel
         if (User.Identity.IsAuthenticated && User.HasClaim("Perfil", "Admin"))
         {
             return RedirectToAction("PainelAdmin");
@@ -35,7 +35,7 @@ public class AdminController : Controller {
     [HttpPost]
     public async Task<IActionResult> Admin(string login, string senha)
     {
-        // Busca o admin único no banco
+        // Busca o admin ï¿½nico no banco
         var admin = _context.Segurancas.FirstOrDefault(s => s.IsAdmin == true && s.cpf == login);
 
         if (admin != null)
@@ -232,7 +232,7 @@ public class AdminController : Controller {
     [HttpPost]
     public async Task<IActionResult> UploadContracheque(ContrachequeViewModel model)
     {
-        ModelState.Remove("nomeSeguranca"); // Remove a validação do nome, pois ele não é enviado no formulário
+        ModelState.Remove("nomeSeguranca"); // Remove a validaï¿½ï¿½o do nome, pois ele nï¿½o ï¿½ enviado no formulï¿½rio
         if (ModelState.IsValid)
         {
 
@@ -243,7 +243,7 @@ public class AdminController : Controller {
 
             if (contrachequeExistente != null)
             {
-                ModelState.AddModelError(string.Empty, "Já existe um contracheque para esse mês e ano. Por favor, escolha outro período.");
+                ModelState.AddModelError(string.Empty, "Jï¿½ existe um contracheque para esse mï¿½s e ano. Por favor, escolha outro perï¿½odo.");
                 return View(model);
             }
 
@@ -252,17 +252,17 @@ public class AdminController : Controller {
                 // Definir o nome do arquivo
                 string nomeArquivo = $"Contracheque_{model.segurancaId}_{model.mesUpload}_{model.anoUpload}.pdf";
 
-                // Caminho onde será salvo 
+                // Caminho onde serï¿½ salvo 
                 string caminhoPasta = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "contracheques");
                 string caminhoCompleto = Path.Combine(caminhoPasta, nomeArquivo);
 
-                // Salvar o arquivo físico no HD
+                // Salvar o arquivo fï¿½sico no HD
                 using (var stream = new FileStream(caminhoCompleto, FileMode.Create))
                 {
                     await model.arquivoPdf.CopyToAsync(stream);
                 }
 
-                // Salvar as informações no Banco de Dados
+                // Salvar as informaï¿½ï¿½es no Banco de Dados
                 var novoContracheque = new Contracheque
                 {
                     mesUpload = model.mesUpload,
@@ -279,7 +279,7 @@ public class AdminController : Controller {
             }
         }
 
-        Console.WriteLine("ModelState inválido ou arquivo não selecionado.");
+        Console.WriteLine("ModelState invï¿½lido ou arquivo nï¿½o selecionado.");
 
         return View(model);
     }
@@ -291,16 +291,20 @@ public class AdminController : Controller {
         {
             return Forbid();
         }
+        Console.WriteLine("\n\n\n\n\n\nAcessando Rota\n\n\n\n\n\n\n");
 
         var contracheque = await _context.Contracheques.FindAsync(id);
 
         if (contracheque == null)
         {
-            ModelState.AddModelError(string.Empty, "Esse contracheque não Existe mais");
+            ModelState.AddModelError(string.Empty, "Esse contracheque nï¿½o Existe mais");
             return NotFound();
         }
 
         int segurancaId = contracheque.segurancaId;
+
+        Console.WriteLine($"\n\n\n\n\n\nID do contracheque a ser excluÃ­do: {id}\n\n\n\n\n\n\n");
+        Console.WriteLine($"\n\n\n\n\n\n\n\n ID do seguranca relacionado: {segurancaId} \n\n\n\n\n\n\n\n");
 
         if (!string.IsNullOrEmpty(contracheque.filePath)) {
                
@@ -372,19 +376,19 @@ public class AdminController : Controller {
 
         if(seguranca.isApproved != statusAprovacao.Rejeitado)
         {
-            ModelState.AddModelError(string.Empty, "Só é possível solicitar edição para contas rejeitadas.");
+            ModelState.AddModelError(string.Empty, "Sï¿½ ï¿½ possï¿½vel solicitar ediï¿½ï¿½o para contas rejeitadas.");
             return RedirectToAction("SegurancasRejeitados");
         }
 
         if(seguranca.isApproved == statusAprovacao.EmEdicao)
         {
-            ModelState.AddModelError(string.Empty, "Edição já solicitada para essa conta.");
+            ModelState.AddModelError(string.Empty, "Ediï¿½ï¿½o jï¿½ solicitada para essa conta.");
             return RedirectToAction("SegurancasRejeitados");
         }
 
         if(seguranca.isApproved == statusAprovacao.Pendente || seguranca.isApproved == statusAprovacao.Aprovado)
         {
-            ModelState.AddModelError(string.Empty, "Só é possível solicitar edição para contas rejeitadas.");
+            ModelState.AddModelError(string.Empty, "Sï¿½ ï¿½ possï¿½vel solicitar ediï¿½ï¿½o para contas rejeitadas.");
             return RedirectToAction("SegurancasRejeitados");
         }
 
@@ -394,8 +398,8 @@ public class AdminController : Controller {
         await _context.SaveChangesAsync();
 
 
-        //Quando a pessoa faz o cadastro, a conta já é criada. A linha no banco é criada. 
-        //Então eu preciso modificar o status dessa conta de modo que a pessoa saiba que pode editar os dados.
+        //Quando a pessoa faz o cadastro, a conta jï¿½ ï¿½ criada. A linha no banco ï¿½ criada. 
+        //Entï¿½o eu preciso modificar o status dessa conta de modo que a pessoa saiba que pode editar os dados.
 
         return RedirectToAction("SegurancasRejeitados");
     }
@@ -412,7 +416,7 @@ public class AdminController : Controller {
         if (seguranca == null) return NotFound();
         if (seguranca.isApproved != statusAprovacao.EmEdicao)
         {
-            ModelState.AddModelError(string.Empty, "Só é possível cancelar edição para contas que estão em edição.");
+            ModelState.AddModelError(string.Empty, "Sï¿½ ï¿½ possï¿½vel cancelar ediï¿½ï¿½o para contas que estï¿½o em ediï¿½ï¿½o.");
             return RedirectToAction("SegurancasRejeitados");
         }
         seguranca.isApproved = statusAprovacao.Rejeitado;

@@ -1,8 +1,12 @@
 @model IEnumerable<appSegurancas.Models.Seguranca>
 
-    @{ ViewData["Title"] = "Painel de Aprovação"; }
-
-    <h2>Seguranças Aguardando Aprovação</h2>
+    @{ ViewData["Title"] = "Painel de AprovaÃ§Ã£o"; }
+    <div class="d-flex gap-3 align-items-center mb-3">
+        <a asp-for="Admin" asp-action="PainelAdmin" class="btn btn-sm btn-secondary">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+        <h2>SeguranÃ§as Aguardando AprovaÃ§Ã£o</h2>
+    </div>
     <form asp-action="PesquisarSegurancaPendente" method="get">
         <div class="input-group mb-3">
             <button class=" input-group-text" type="submit">
@@ -14,15 +18,15 @@
             </a>
         </div>
     </form>
-
+    <a asp-for="Admin" asp-action="SegurancasRejeitados" class="btn btn-success">Cadastros Rejeitados</a>
     <table class="table table-striped mt-4">
         <thead>
             <tr>
                 <th>Nome</th>
                 <th>CPF</th>
-                <th>Matrícula</th>
+                <th>MatrÃ­cula</th>
                 <th>Email</th>
-                <th>Ações</th>
+                <th>AÃ§Ãµes</th>
             </tr>
         </thead>
         <tbody>
@@ -45,5 +49,3 @@
 
         </tbody>
     </table>
-    <a asp-for="Admin" asp-action="SegurancasRejeitados" class="btn btn-success">Cadastros Rejeitados</a>
-    <a asp-for="Admin" asp-action="PainelAdmin" class="btn btn-secondary">Voltar</a>
