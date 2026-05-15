@@ -1,12 +1,12 @@
-using Microsoft.AspNetCore.Mvc;
-using appSegurancas.Data;
-using appSegurancas.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;//serve para usar as funcionalidades de controlador e ações
+using appSegurancas.Data;// serve para acessar o contexto do banco de dados e realizar operações de CRUD
+using appSegurancas.Models;//serve para acessar as classes de modelo que representam as entidades do banco de dados
+using Microsoft.EntityFrameworkCore;//serve para usar os recursos do Entity Framework Core, como consultas LINQ
+using Microsoft.AspNetCore.Identity;//serve para usar os recursos de hashing de senha e verificação de senha fornecidos pelo ASP.NET
+using System.Security.Claims;//serve para criar e manipular claims
+using Microsoft.AspNetCore.Authentication;//serve para usar os recursos de autenticação do ASP.NET Core, como o método SignInAsync para criar um cookie de autenticação
+using Microsoft.AspNetCore.Authentication.Cookies;//serve para usar o esquema de autenticação baseado em cookies
+using Microsoft.AspNetCore.Authorization;//serve para usar o atributo [Authorize]
 
 namespace appSegurancas.Controllers;
 

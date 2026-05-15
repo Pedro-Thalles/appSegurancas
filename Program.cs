@@ -17,9 +17,9 @@ builder.Services.AddScoped<IPasswordHasher<Seguranca>, PasswordHasher<Seguranca>
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Seguranca/Login"; // Rota para a página de login
+        options.LoginPath = "/Seguranca/Login"; // Rota para a pï¿½gina de login
         options.AccessDeniedPath = "/Seguranca/AcessoNegado"; // Rota para acesso negado
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(60); // Tempo de expiração do cookie
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(60); // Tempo de expiraï¿½ï¿½o do cookie
     });
 var app = builder.Build();
 
@@ -56,7 +56,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
@@ -65,11 +65,11 @@ app.UseAuthorization();
 app.MapStaticAssets();
 
 
-//isso é a rota inicial
+//isso ï¿½ a rota inicial
 app.MapControllerRoute(
     name: "default",
-    //ele procura um CONTROLLER. Se não encontrar, ele procura o HomeController.
-    //Depois ele procura a ACTION. Se não encontrar, ele procura a Index.
+    //ele procura um CONTROLLER. Se nï¿½o encontrar, ele procura o HomeController.
+    //Depois ele procura a ACTION. Se nï¿½o encontrar, ele procura a Index.
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 

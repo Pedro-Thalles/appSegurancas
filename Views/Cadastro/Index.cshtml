@@ -1,17 +1,17 @@
 @model appSegurancas.Models.Seguranca
 
 @{
-    ViewData["Title"] = "Cadastro de Segurança";
+    ViewData["Title"] = "Cadastro de SeguranÃ§a";
 }
 <!--asp-for serve para encontrar a variavel na classe de Seguranca -->
 @if (Model.isApproved == statusAprovacao.EmEdicao){
 <h2 class="alert alert-warning">Edite seu Cadastro</h2>
-} else {<h2>Cadastrar Novo Segurança</h2>}
+} else {<h2>Cadastrar Novo SeguranÃ§a</h2>}
 
 
 <div class="row">
     <div class="col-md-6">
-        <form asp-action="Cadastro" method="post">
+        <form asp-controller="Cadastro" asp-action="Index" method="post">
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group mb-3">
                 <label asp-for="nome" class="control-label"></label>
@@ -47,7 +47,7 @@
             <div class="form-group mb-4">
                 <label>Confirme sua Senha</label>
                 <input name="senhaConfirm" type="password" class="form-control" />
-                <small class="text-muted">A senha será criptografada antes de salvar.</small>
+                <small class="text-muted">A senha serÃ¡ criptografada antes de salvar.</small>
             </div>
 
             <button type="submit" class="btn btn-primary">Finalizar Cadastro</button>
